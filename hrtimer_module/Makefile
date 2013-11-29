@@ -7,3 +7,4 @@ clean:
 	rm -f hrtimer_mod.ko  hrtimer_mod.mod.c  hrtimer_mod.mod.o  hrtimer_mod.o  modules.order Module.symvers
 	rm -f .hrtimer*
 	rm -rf .tmp_versions
+
