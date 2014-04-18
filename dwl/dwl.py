@@ -123,13 +123,6 @@ def pulse():
   trace_folder = workloads[g_guest_wl]['trace_folder']
   dict_out_dir = {'outdir': trace_folder }
   remote_command = remote_command % dict_out_dir
-
-  #if not contrib.files.exists(trace_folder, False, True):
-    #run('mkdir ' + trace_folder)
-  
-  #with cd(trace_folder):
-    #if g_guest_wl == 'script':
-      #put('script-' + str(env.host_string), 'script')
   
   run('pwd')
   put('script-' + str(env.host_string), 'script')
