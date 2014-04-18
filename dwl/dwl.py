@@ -16,12 +16,12 @@ env.roledefs ={
 }
 
 # Global variables and their default values
-g_sleep_value = 5
+g_sleep_value = 3
 g_guest_wl = 'wk-pulse'
 g_host_wl= 'sleep'
 
 # Global general variables
-g_tracing_command = 'lttng-simple -e vmsync -c -k --stateless -- '
+g_tracing_command = 'lttng-simple -o %(outdir)s -e vmsync -c -k --stateless -- '
 g_local_trace_dir = time.strftime("%m_%d__%H_%M") + "/"
 
 '''
@@ -42,7 +42,7 @@ workloads = {
   },
   'wk-pulse': {
     'command': 'wk-pulse',
-    'argument': '--spin 100000 --frequency $FREQ --thread 1 --duration 5000000 --cpuset 0',
+    'argument': '--spin 100000 --frequency $FREQ --thread 1 --duration 10000000 --cpuset 0',
     'trace_name': 'wk-pulse-k',
     'trace_folder': 'traces/pulse',
     'description': 'Pulse from wokload-kit'
@@ -70,7 +70,7 @@ def usage():
   print('')
   print('Where _function_ can be:')
   print('   available_wk                         Lists available workloads')
-  print('   pulse_wrapper:guest_work,host_work   Where guest_work and host_work are workloads from the available workloads')
+  print('   wrapper:guest_work,host_work   Where guest_work and host_work are workloads from the available workloads')
   print('                                        Default values are: guest_work = wk-pulse and host_work = sleep')
 
 
@@ -84,7 +84,7 @@ def available_wk():
     print('')
 
 
-def pulse_wrapper(guest_work = 'wk-pulse', host_work = 'sleep'):
+def wrapper(guest_work = 'wk-pulse', host_work = 'sleep'):
   global g_guest_wl
   g_guest_wl = guest_work
   global g_host_wl
@@ -110,8 +110,10 @@ def local_trace():
   if g_host_wl == 'script':
     local('cp script ' + g_local_trace_dir)
     
-  os.chdir(g_local_trace_dir)
+  #os.chdir(g_local_trace_dir)
   local_command = g_tracing_command + workloads[g_host_wl]['command'] + ' ' + workloads[g_host_wl]['argument']
+  dict_out_dir = {'outdir': g_local_trace_dir }
+  local_command = local_command % dict_out_dir
   local(local_command)
 
 ''' Remote function '''
@@ -119,18 +121,24 @@ def local_trace():
 def pulse():
   remote_command = g_tracing_command + workloads[g_guest_wl]['command'] + ' ' + workloads[g_guest_wl]['argument']
   trace_folder = workloads[g_guest_wl]['trace_folder']
+  dict_out_dir = {'outdir': trace_folder }
+  remote_command = remote_command % dict_out_dir
 
-  if not contrib.files.exists(trace_folder, False, True):
-    run('mkdir ' + trace_folder)
+  #if not contrib.files.exists(trace_folder, False, True):
+    #run('mkdir ' + trace_folder)
   
-  with cd(trace_folder):
-    if g_guest_wl == 'script':
-      put('script', 'script')
+  #with cd(trace_folder):
+    #if g_guest_wl == 'script':
+      #put('script-' + str(env.host_string), 'script')
+  
+  run('pwd')
+  put('script-' + str(env.host_string), 'script')
     
-    if(env.host_string == 'jessie'):
-      run(remote_command.replace('$FREQ', '4'))
-    elif(env.host_string == 'jessieclone'):
-      run(remote_command.replace('$FREQ', '2'))
+  if(env.host_string == 'jessie'):
+    run(remote_command.replace('$FREQ', '4'))
+  elif(env.host_string == 'jessieclone'):
+    run(remote_command.replace('$FREQ', '2'))
+  
   copy()
 
 
