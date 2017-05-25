@@ -8,3 +8,7 @@ lttng enable-event --syscall -a -k -c c0
 
 lttng start
 
+[do something]
+
+lttng stop
+lttng destroy
