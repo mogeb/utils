@@ -78,6 +78,7 @@ int main(int argc, char **argv)
     cout << endl << "ReleaseFreeMemory()" << endl << endl;
     MallocExtension::instance()->ReleaseFreeMemory();
     malloc_stats();
+    cout << endl << "Done. Ctrl-C to quit" << endl;
 
     for (int i = 0; i < num_threads; i++) {
         pthread_join(threads[i], NULL);
