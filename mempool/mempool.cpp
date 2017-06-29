@@ -32,7 +32,6 @@ size_t bsize = 4096;
 size_t alloc_count = 1048576; // allocate
 
 struct fake_raw_posix_aligned{
-    char stub[8];
     void* data;
     fake_raw_posix_aligned() {
                            // align // size
