@@ -12,5 +12,6 @@ lttng add-context -u -t vpid -t vtid -t procname
 #lttng add-context -k -t procname -c c0
 
 lttng start
-lttng start; sleep 0.5; lttng stop
+sleep 0.5
+lttng stop
 
